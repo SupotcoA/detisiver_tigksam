@@ -14,17 +14,19 @@ class AutoEncoder(nn.Module):
         self.model = VQModel(ddconfig,
                              n_embed,
                              embed_dim,
-                             ckpt_path=ae_config['ckpt_path'])
+                             ckpt_path=ae_config['ckpt_path']).eval().requires_grad_(False)
 
     def forward(self, x):
-        return self.model(x).sample
+        idx = self.encode(x)
+        return idx, self.decode(idx)
 
-    def encode(self, x, mode=True):
-        dist = self.model.encode(x).latent_dist
-        if mode:
-            return dist.mode()
-        else:
-            return dist.sample()
+    def encode(self, x):
+        quant, _, (_, _, idx) = self.model.encode(x)  # idx[b,h,w]
+        return idx
 
-    def decode(self, x):
-        return self.model.decode(x).sample
+    def decode(self,idx):
+        quant = self.model.quantize.embedding[idx]
+        return self.model.decode(quant)
+
+    def decode_quant(self, x):
+        return self.model.decode(x)
