@@ -1,23 +1,24 @@
 import torch
 from torch import nn
 from autoencoder import AutoEncoder
-from modules import Unet, DDPMScheduler, DDIMScheduler, TimeEmbed, ClassEmbed
+from modules import TransformerEncoder
+from nnn_modules import TimeEmbed, ClassEmbed
 
 
-class LatentDiffusion(nn.Module):
+class MaskGIT(nn.Module):
 
     def __init__(self,
                  data_config,
-                 unet_config,
+                 maskgit_config,
                  ae_config,
                  diffusion_config):
-        super(LatentDiffusion, self).__init__()
+        super(MaskGIT, self).__init__()
         self.device = torch.device('cuda') if torch.cuda.is_available() else torch.device('cpu')
         self.latent_size = ae_config['latent_size']
         self.latent_dim = ae_config['latent_dim']
         self.max_train_steps = diffusion_config['max_train_steps']
         self.sample_steps = diffusion_config['sample_steps']
-        self.unet = Unet(**unet_config)
+        self.maskgit = TransformerEncoder(**maskgit_config)
         self.ae = AutoEncoder(**ae_config)
         if self.max_train_steps == self.sample_steps:
             self.sampler = DDPMScheduler(self.max_train_steps,

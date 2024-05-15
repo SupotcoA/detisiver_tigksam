@@ -8,7 +8,7 @@ class AutoEncoder(nn.Module):
                  ae_config):
 
         super().__init__()
-        ddconfig = ae_config['dd_config']
+        ddconfig = ae_config['ddconfig']
         n_embed = ae_config['n_embed']
         embed_dim = ae_config['embed_dim']
         self.model = VQModel(ddconfig,
