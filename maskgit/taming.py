@@ -489,7 +489,7 @@ class VQModel(nn.Module):
                  n_embed,
                  embed_dim,
                  ckpt_path=None,
-                 ignore_keys=[],
+                 ignore_keys=['loss'],
                  image_key="image",
                  colorize_nlabels=None,
                  monitor=None,
