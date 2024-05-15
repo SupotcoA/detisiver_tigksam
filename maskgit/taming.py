@@ -495,6 +495,7 @@ class VQModel(nn.Module):
                  monitor=None,
                  remap=None,
                  sane_index_shape=True,  # tell vector quantizer to return indices as bhw
+                 **ignoredkwargs
                  ):
         super().__init__()
         self.image_key = image_key

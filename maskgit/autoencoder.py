@@ -11,10 +11,7 @@ class AutoEncoder(nn.Module):
         ddconfig = ae_config['ddconfig']
         n_embed = ae_config['n_embed']
         embed_dim = ae_config['embed_dim']
-        self.model = VQModel(ddconfig,
-                             n_embed,
-                             embed_dim,
-                             ckpt_path=ae_config['ckpt_path']).eval().requires_grad_(False)
+        self.model = VQModel(**ae_config).eval().requires_grad_(False)
 
     def forward(self, x):
         idx = self.encode(x)
