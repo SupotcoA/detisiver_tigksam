@@ -48,7 +48,7 @@ def test(model,
          test_dataset):
     model.eval()
     acc_loss = 0
-    acc_log_perplexity = torch.tensor(0)
+    acc_log_perplexity = torch.tensor(0.0)
     step = 0
     for [x0, cls] in test_dataset:
         step += 1

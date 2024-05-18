@@ -116,7 +116,7 @@ class MaskGITIndex(nn.Module):
         for i in range(b):
             _, selected_positions = torch.topk(r[i], k=n[i], dim=-1)  # (n_masked,)
             mask[i, selected_positions] = True
-        class_mask = torch.rand((b,)) < 1 / (self.n_classes + 1)
+        class_mask = torch.rand((b,)) < max(0.15, 1 / (self.n_classes + 1))
         return mask, class_mask
 
     def embed(self, idx, c_idx, mask=None, class_mask=None):  # ind/mask [batch_size,n_pos] or [n_pos,]
