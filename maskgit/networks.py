@@ -172,7 +172,7 @@ class MaskGITIndex(nn.Module):
                                             dim=-1,
                                             index=token_sample.unsqueeze(-1)).squeeze(-1)
             token_confidence = token_confidence.view([b, n_masked])
-            token_confidence = token_confidence - torch.rand_like(token_confidence) * 0.001  ###
+
             sorted_confidence, _ = torch.sort(token_confidence,  # [b, n_masked]
                                               dim=1, descending=True)
             n = self.calculate_n_mask(x=torch.tensor(t / n_steps,
@@ -186,7 +186,7 @@ class MaskGITIndex(nn.Module):
             #                                 current_ind[mask])  # [b * n_masked,]
             mask[mask.clone()] = ~confident_token_flag
             # sample confident idx end
-            assert torch.abs(torch.sum(mask) - n_masked).cpu() <= 1
+            assert torch.abs(torch.sum(mask)/b - n_masked).cpu() <= 1, f"{torch.sum(mask)} {n_masked}"
             ind_ls.append(current_ind.clone())
         return ind_ls  # list[n_step, tensor[b, n_pos]]
 
@@ -214,7 +214,6 @@ class MaskGITIndex(nn.Module):
                                             dim=-1,
                                             index=token_sample.unsqueeze(-1)).squeeze(-1)
             token_confidence = token_confidence.view([b, n_masked])
-            token_confidence = token_confidence - torch.rand_like(token_confidence) * 0.001  ###
             sorted_confidence, _ = torch.sort(token_confidence,  # [b, n_masked]
                                               dim=1, descending=True)
             n = self.calculate_n_mask(x=torch.tensor(t / n_steps,
@@ -225,7 +224,7 @@ class MaskGITIndex(nn.Module):
             confident_token_flag = (token_confidence > threshold_confidence).view(-1).cpu()  # [b * n_masked]
             # sample confident idx end
             mask[mask.clone()] = ~confident_token_flag
-            assert torch.abs(torch.sum(mask) - n_masked).cpu() <= 1, f"{torch.sum(mask)} {n_masked}"
+            assert torch.abs(torch.sum(mask)/b - n_masked).cpu() <= 1, f"{torch.sum(mask)} {n_masked}"
         return current_ind  # [b, n_pos]
 
 
