@@ -16,7 +16,7 @@ class MaskGIT(nn.Module):
         self.latent_size = ae_config['latent_size']
         self.n_pos = self.latent_size[0] * self.latent_size[1]
         self.maskgit = MaskGITIndex(**maskgit_config)
-        self.ae = AutoEncoder(**ae_config)
+        self.ae = AutoEncoder(ae_config)
 
     def train_step(self, token_idx, class_idx):  # [batch_size, n_pos], [batch_size,]
         out = self.maskgit.train_val_step(token_idx, class_idx)

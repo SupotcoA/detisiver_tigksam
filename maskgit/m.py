@@ -24,9 +24,6 @@ with open(zip_file_path, 'wb') as f:
 # 使用shutil解压zip文件
 shutil.unpack_archive(zip_file_path, target_folder)
 
-
-import shutil
-
 try:
     shutil.rmtree('/kaggle/working/detisiver_tigksam')
 except:
