@@ -172,6 +172,7 @@ class MaskGITIndex(nn.Module):
                                             dim=-1,
                                             index=token_sample.unsqueeze(-1)).squeeze(-1)
             token_confidence = token_confidence.view([b, n_masked])
+            token_confidence = token_confidence - torch.rand_like(token_confidence) * 0.001  ###
             sorted_confidence, _ = torch.sort(token_confidence,  # [b, n_masked]
                                               dim=1, descending=True)
             n = self.calculate_n_mask(x=torch.tensor(t / n_steps,
@@ -179,7 +180,6 @@ class MaskGITIndex(nn.Module):
             dn = n_masked - n
             n_masked = n
             threshold_confidence = sorted_confidence[:, dn]  # [b, 1]
-            token_confidence = token_confidence - torch.rand_like(token_confidence) * 0.001  ###
             confident_token_flag = (token_confidence > threshold_confidence).view(-1).cpu()  # [b * n_masked]
             # current_ind[mask] = torch.where(confident_token_flag,
             #                                 token_sample.cpu(),  # [b * n_masked,]
@@ -214,6 +214,7 @@ class MaskGITIndex(nn.Module):
                                             dim=-1,
                                             index=token_sample.unsqueeze(-1)).squeeze(-1)
             token_confidence = token_confidence.view([b, n_masked])
+            token_confidence = token_confidence - torch.rand_like(token_confidence) * 0.001  ###
             sorted_confidence, _ = torch.sort(token_confidence,  # [b, n_masked]
                                               dim=1, descending=True)
             n = self.calculate_n_mask(x=torch.tensor(t / n_steps,
@@ -221,7 +222,6 @@ class MaskGITIndex(nn.Module):
             dn = n_masked - n
             n_masked = n
             threshold_confidence = sorted_confidence[:, dn]  # [b, 1]
-            token_confidence = token_confidence - torch.rand_like(token_confidence)*0.001  ###
             confident_token_flag = (token_confidence > threshold_confidence).view(-1).cpu()  # [b * n_masked]
             # sample confident idx end
             mask[mask.clone()] = ~confident_token_flag
