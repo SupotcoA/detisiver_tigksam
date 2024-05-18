@@ -108,9 +108,11 @@ def build_cached_dataset(data_config):
     assert x.shape[0] == 15000
     s = x.shape[0]
     split = int(s * data_config['split'])
-    is_train_idx = torch.randperm(x.shape[0])[:split]
-    train_data = TensorDataset(x[is_train_idx], cls[is_train_idx])
-    test_data = TensorDataset(x[~is_train_idx], cls[~is_train_idx])
+    perm_idx = torch.randperm(x.shape[0])
+    train_idx = perm_idx[:split]
+    test_idx = perm_idx[split:]
+    train_data = TensorDataset(x[train_idx], cls[train_idx])
+    test_data = TensorDataset(x[test_idx], cls[test_idx])
     train_data_loader = InfiniteDataLoader(train_data,
                                            batch_size=data_config['batch_size'],
                                            shuffle=True,
