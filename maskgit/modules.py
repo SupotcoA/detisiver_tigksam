@@ -13,7 +13,7 @@ class AdaptiveLayerNorm(nn.Module):
 
     def forward(self, x, c):
         x = F.layer_norm(x, self.n_channels)
-        scale, bias = torch.chunk(self.fc(c), chunks=2, dim=1)
+        scale, bias = torch.chunk(self.fc(c[:, None, :]), chunks=2, dim=2)
         return x.mul(1 + scale).add(bias)
 
 
@@ -49,7 +49,7 @@ class TransformerEncoderLayer(nn.Module):
         self.activation = nn.ReLU()  # nn.GELU()
 
     def forward(self, x: torch.Tensor, c: torch.Tensor):
-        gamma1, beta1, gamma2, beta2 = torch.chunk(self.embed_c(c), chunks=4, dim=1)
+        gamma1, beta1, gamma2, beta2 = torch.chunk(self.embed_c(c[:, None, :]), chunks=4, dim=2)
         if not self.norm_first:
             h = self.self_attn(x, x, x, need_weights=False)[0]
             h = self.dropout1(h)
@@ -64,14 +64,11 @@ class TransformerEncoderLayer(nn.Module):
             x = x.mul(1 + gamma2).add(beta2)
         elif self.norm_first:
             h = self.norm1(x)
-            try:
-                h = h.mul(1 + gamma1).add(beta1)
-            except:
-                print(h.shape,gamma1.shape)
+            h = h.mul(1 + gamma1).add(beta1)
             h = self.self_attn(h, h, h, need_weights=False)[0]
             h = self.dropout1(h)
             x = x + h
-            h = self.norm2(h)
+            h = self.norm2(x)
             h = h.mul(1 + gamma2).add(beta2)
             h = self.linear1(h)
             h = self.activation(h)
@@ -115,13 +112,13 @@ class AdaLNZeroTransformerEncoderLayer(nn.Module):
         self.activation = nn.ReLU()  # nn.GELU()
 
     def forward(self, x: torch.Tensor, c: torch.Tensor):
-        gamma1, beta1, alpha1, gamma2, beta2, alpha2 = torch.chunk(self.embed_c(c), chunks=6, dim=1)
+        gamma1, beta1, alpha1, gamma2, beta2, alpha2 = torch.chunk(self.embed_c(c[:, None, :]), chunks=6, dim=2)
         h = self.norm1(x)
         h = h.mul(1 + gamma1).add(beta1)
         h = self.self_attn(h, h, h, need_weights=False)[0]
         h = self.dropout1(h)
         x = x + h.mul(alpha1)
-        h = self.norm2(h)
+        h = self.norm2(x)
         h = h.mul(1 + gamma2).add(beta2)
         h = self.linear1(h)
         h = self.activation(h)
@@ -156,5 +153,3 @@ class TransformerEncoder(nn.Module):
         for layer in self.layers:
             x = layer(x, c)
         return x
-
-
