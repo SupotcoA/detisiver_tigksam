@@ -1,5 +1,6 @@
 import torch
-from utils import Logger, check_ae, conditional_generation, conditional_generation_gradually
+from utils import Logger, check_ae, pca_weight,\
+    conditional_generation, conditional_generation_gradually
 
 
 def train(model: torch.nn.Module,
@@ -30,7 +31,7 @@ def train(model: torch.nn.Module,
                  test_dataset)
             logger.start_generation()
             model.eval()
-            for cls in [0, 1, 2, 3]:
+            for cls in [0, 1, 2]:
                 conditional_generation(model, cls=cls, step=logger.step,
                                        root=train_config['outcome_root'])
                 conditional_generation_gradually(model, cls=cls, step=logger.step,
@@ -39,6 +40,9 @@ def train(model: torch.nn.Module,
             logger.end_generation()
             model.train()
         if logger.step % train_config['train_steps'] == 0:
+            pca_weight(weight=model.maskgit.pos_embed,
+                       latent_size=(32, 32),
+                       root=train_config['outcome_root'])
             break
 
 

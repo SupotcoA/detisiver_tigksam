@@ -4,6 +4,7 @@ import os
 import torch
 import time
 import matplotlib.pyplot as plt
+from sklearn.decomposition import PCA
 
 
 @torch.no_grad()
@@ -138,3 +139,30 @@ def conditional_generation_gradually(model, cls: int, step, root):
     for i in range(n_steps):
         imgs.append(tensor2bgr(model.decode(idx[i])))  # imgs [n_steps, b, h, w, c=3]
     vis_imgs_gradually(np.asarray(imgs), step, cls, root, use_plt=False)
+
+
+@torch.no_grad()
+def pca_weight(weight, latent_size, root):
+    def f(k):
+        if 0 <= k <= 3:  # 0 3
+            return k
+        elif 4 <= k <= 7:  # 5 11
+            return 2 * k - 3
+        elif 8 <= k <= 11:  # 14 23
+            return 3 * k - 10
+        else:
+            return 0
+
+    X = weight.detach().cpu().numpy()
+    pca = PCA(n_components=24)
+    X = pca.fit_transform(X)
+    fig, axs = plt.subplots(3, 4)
+    for i, ax in enumerate(axs.flat):
+        k = f(i)
+        ax.imshow(np.reshape(X[:, k], latent_size))
+        ax.set_xticks([])
+        ax.set_yticks([])
+        ax.set_xlabel(str(k + 1))
+    plt.tight_layout(pad=0.5, h_pad=0.5, w_pad=0.5)
+    plt.savefig(os.path.join(root, f"PosEmbed.png"), dpi=80)
+    plt.clf()
