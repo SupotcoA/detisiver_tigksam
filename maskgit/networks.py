@@ -220,7 +220,11 @@ class MaskGITIndex(nn.Module):
                                                      dtype=torch.float32).view(1, ))
             dn = n_masked - n
             n_masked = n
-            threshold_confidence = sorted_confidence[:, dn]  # [b, 1]
+            try:
+                threshold_confidence = sorted_confidence[:, dn]  # [b, 1]
+            except IndexError:
+                print(sorted_confidence.shape, dn)
+                raise
             confident_token_flag = (token_confidence > threshold_confidence).view(-1).cpu()  # [b * n_masked]
             # sample confident idx end
             mask[mask.clone()] = ~confident_token_flag
