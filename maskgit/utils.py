@@ -58,7 +58,7 @@ def vis_imgs_gradually(imgs, step, cls, root, use_plt=False):
     base = np.zeros((b * h, n_steps * w, c), dtype=np.uint8)
     for i in range(b):
         for j in range(n_steps):
-            base[i * h:i * h + h, j * w:j * w + w, :] = imgs[i, j]
+            base[i * h:i * h + h, j * w:j * w + w, :] = imgs[j, i]
     fp = os.path.join(root, f"cdp{step}_{cls}.png")
     cv2.imwrite(fp, base)
     if use_plt:
