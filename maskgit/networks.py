@@ -34,7 +34,7 @@ class MaskGIT(nn.Module):
     @torch.no_grad()
     def decode(self, idx):
         idx = idx.view(idx.shape[0], *self.latent_size).contiguous()
-        return torch.clip(self.ae.decode(idx), -1, 1)
+        return torch.clip(self.ae.decode(idx.to(self.device)), -1, 1)
 
     @torch.no_grad()
     def encode(self, imgs: torch.Tensor):
