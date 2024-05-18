@@ -179,6 +179,7 @@ class MaskGITIndex(nn.Module):
             dn = n_masked - n
             n_masked = n
             threshold_confidence = sorted_confidence[:, dn]  # [b, 1]
+            token_confidence = token_confidence - torch.rand_like(token_confidence) * 0.001  ###
             confident_token_flag = (token_confidence > threshold_confidence).view(-1).cpu()  # [b * n_masked]
             # current_ind[mask] = torch.where(confident_token_flag,
             #                                 token_sample.cpu(),  # [b * n_masked,]
@@ -220,10 +221,11 @@ class MaskGITIndex(nn.Module):
             dn = n_masked - n
             n_masked = n
             threshold_confidence = sorted_confidence[:, dn]  # [b, 1]
+            token_confidence = token_confidence - torch.rand_like(token_confidence)*0.001  ###
             confident_token_flag = (token_confidence > threshold_confidence).view(-1).cpu()  # [b * n_masked]
             # sample confident idx end
             mask[mask.clone()] = ~confident_token_flag
-            assert torch.abs(torch.sum(mask) - n_masked).cpu() <= 1
+            assert torch.abs(torch.sum(mask) - n_masked).cpu() <= 1, f"{torch.sum(mask)} {n_masked}"
         return current_ind  # [b, n_pos]
 
 
