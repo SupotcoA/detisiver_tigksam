@@ -9,8 +9,12 @@ import matplotlib.pyplot as plt
 @torch.no_grad()
 def print_num_params(model, name, log_path):
     num_params = 0
-    for param in model.parameters():
-        num_params += param.numel()
+    if isinstance(model, torch.nn.Module):
+        for param in model.parameters():
+            num_params += param.numel()
+    elif isinstance(model, list):
+        for param in model:
+            num_params += param.numel()
     with open(log_path, 'a') as f:
         f.write(f"{name} parameters: {num_params}\n")
     print(f"{name} parameters: {num_params}")

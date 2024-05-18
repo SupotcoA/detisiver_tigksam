@@ -64,7 +64,10 @@ class TransformerEncoderLayer(nn.Module):
             x = x.mul(1 + gamma2).add(beta2)
         elif self.norm_first:
             h = self.norm1(x)
-            h = h.mul(1 + gamma1).add(beta1)
+            try:
+                h = h.mul(1 + gamma1).add(beta1)
+            except:
+                print(h.shape,gamma1.shape)
             h = self.self_attn(h, h, h, need_weights=False)[0]
             h = self.dropout1(h)
             x = x + h
