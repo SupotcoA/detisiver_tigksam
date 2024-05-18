@@ -39,15 +39,13 @@ class ImageDataset(Dataset):
 
 class TensorDataset(Dataset):
     def __init__(self, images, labels):
-        self.images = images * 3  ### *3
+        self.images = images
         self.labels = labels
 
     def __len__(self):
         return self.images.shape[0]
 
     def __getitem__(self, idx):
-        # div_,mod_=divmod(idx,5000)  ###
-        # idx = 5000*div_+(mod_%200)  ### remove these two lines
         image = self.images[idx]
         label = self.labels[idx]
         return image, label

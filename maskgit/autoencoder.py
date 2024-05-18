@@ -22,7 +22,7 @@ class AutoEncoder(nn.Module):
         return idx
 
     def decode(self,idx):
-        quant = self.model.quantize.embedding[idx]
+        quant = self.model.quantize.embedding(idx)
         return self.model.decode(quant)
 
     def decode_quant(self, x):
