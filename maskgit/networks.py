@@ -168,25 +168,27 @@ class MaskGITIndex(nn.Module):
             token_dis = torch.distributions.categorical.Categorical(logits=masked_logits)
             token_sample = token_dis.sample()  # [b * n_masked,]
             current_ind[mask] = token_sample.cpu()
-            token_confidence = torch.gather(token_dis.probs,  # [b * n_masked,]
-                                            dim=-1,
-                                            index=token_sample.unsqueeze(-1)).squeeze(-1)
-            token_confidence = token_confidence.view([b, n_masked])
+            if t != n_steps:
+                token_confidence = torch.gather(token_dis.probs,  # [b * n_masked,]
+                                                dim=-1,
+                                                index=token_sample.unsqueeze(-1)).squeeze(-1)
+                token_confidence = token_confidence.view([b, n_masked])
 
-            sorted_confidence, _ = torch.sort(token_confidence,  # [b, n_masked]
-                                              dim=1, descending=True)
-            n = self.calculate_n_mask(x=torch.tensor(t / n_steps,
-                                                     dtype=torch.float32).view(1, ))
-            dn = n_masked - n
-            n_masked = n
-            threshold_confidence = sorted_confidence[:, dn]  # [b, 1]
-            confident_token_flag = (token_confidence > threshold_confidence).view(-1).cpu()  # [b * n_masked]
-            # current_ind[mask] = torch.where(confident_token_flag,
-            #                                 token_sample.cpu(),  # [b * n_masked,]
-            #                                 current_ind[mask])  # [b * n_masked,]
-            mask[mask.clone()] = ~confident_token_flag
-            # sample confident idx end
-            assert torch.abs(torch.sum(mask)/b - n_masked).cpu() <= 1, f"{torch.sum(mask)} {n_masked}"
+                sorted_confidence, _ = torch.sort(token_confidence,  # [b, n_masked]
+                                                  dim=1, descending=True)
+                n = self.calculate_n_mask(x=torch.tensor(t / n_steps,
+                                                         dtype=torch.float32).view(1, ))
+                dn = n_masked - n
+                n_masked = n
+
+                threshold_confidence = sorted_confidence[:, dn]  # [b, 1]
+                confident_token_flag = (token_confidence > threshold_confidence).view(-1).cpu()  # [b * n_masked]
+                # current_ind[mask] = torch.where(confident_token_flag,
+                #                                 token_sample.cpu(),  # [b * n_masked,]
+                #                                 current_ind[mask])  # [b * n_masked,]
+                mask[mask.clone()] = ~confident_token_flag
+                # sample confident idx end
+                assert torch.abs(torch.sum(mask)/b - n_masked).cpu() <= 1, f"{torch.sum(mask)} {n_masked}"
             ind_ls.append(current_ind.clone())
         return ind_ls  # list[n_step, tensor[b, n_pos]]
 
@@ -210,25 +212,23 @@ class MaskGITIndex(nn.Module):
             token_dis = torch.distributions.categorical.Categorical(logits=masked_logits)
             token_sample = token_dis.sample()  # [b * n_masked,]
             current_ind[mask] = token_sample.cpu()
-            token_confidence = torch.gather(token_dis.probs,  # [b * n_masked,]
-                                            dim=-1,
-                                            index=token_sample.unsqueeze(-1)).squeeze(-1)
-            token_confidence = token_confidence.view([b, n_masked])
-            sorted_confidence, _ = torch.sort(token_confidence,  # [b, n_masked]
-                                              dim=1, descending=True)
-            n = self.calculate_n_mask(x=torch.tensor(t / n_steps,
-                                                     dtype=torch.float32).view(1, ))
-            dn = n_masked - n
-            n_masked = n
-            try:
+            if t != n_steps:
+                token_confidence = torch.gather(token_dis.probs,  # [b * n_masked,]
+                                                dim=-1,
+                                                index=token_sample.unsqueeze(-1)).squeeze(-1)
+                token_confidence = token_confidence.view([b, n_masked])
+                sorted_confidence, _ = torch.sort(token_confidence,  # [b, n_masked]
+                                                  dim=1, descending=True)
+                n = self.calculate_n_mask(x=torch.tensor(t / n_steps,
+                                                         dtype=torch.float32).view(1, ))
+                dn = n_masked - n
+                n_masked = n
+
                 threshold_confidence = sorted_confidence[:, dn]  # [b, 1]
-            except:
-                print(sorted_confidence.shape, dn)
-                raise
-            confident_token_flag = (token_confidence > threshold_confidence).view(-1).cpu()  # [b * n_masked]
-            # sample confident idx end
-            mask[mask.clone()] = ~confident_token_flag
-            assert torch.abs(torch.sum(mask)/b - n_masked).cpu() <= 1, f"{torch.sum(mask)} {n_masked}"
+                confident_token_flag = (token_confidence > threshold_confidence).view(-1).cpu()  # [b * n_masked]
+                # sample confident idx end
+                mask[mask.clone()] = ~confident_token_flag
+                assert torch.abs(torch.sum(mask)/b - n_masked).cpu() <= 1, f"{torch.sum(mask)} {n_masked}"
         return current_ind  # [b, n_pos]
 
 
