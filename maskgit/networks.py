@@ -33,16 +33,13 @@ class MaskGIT(nn.Module):
 
     @torch.no_grad()
     def decode(self, idx):
-        idx = torch.permute(idx, [0, 2, 1]).contiguous() \
-            .view(idx.shape[0], *self.latent_size).contiguous()
+        idx = idx.view(idx.shape[0], *self.latent_size).contiguous()
         return torch.clip(self.ae.decode(idx), -1, 1)
 
     @torch.no_grad()
     def encode(self, imgs: torch.Tensor):
         token_map = self.ae.encode(imgs)
-        flattened_token_map = torch.permute(token_map.view(imgs.shape[0],
-                                                           self.n_pos).contiguous(),
-                                            [0, 2, 1]).contiguous()
+        flattened_token_map = token_map.view(imgs.shape[0], self.n_pos).contiguous()
         return flattened_token_map
 
 
