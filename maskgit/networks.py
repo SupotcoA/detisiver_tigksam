@@ -222,7 +222,7 @@ class MaskGITIndex(nn.Module):
             n_masked = n
             try:
                 threshold_confidence = sorted_confidence[:, dn]  # [b, 1]
-            except IndexError:
+            except:
                 print(sorted_confidence.shape, dn)
                 raise
             confident_token_flag = (token_confidence > threshold_confidence).view(-1).cpu()  # [b * n_masked]
