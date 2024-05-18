@@ -167,7 +167,7 @@ class MaskGITIndex(nn.Module):
             masked_logits = logits.clone()[mask] / temperature[0]  # [b * n_masked, n_tokens]
             token_dis = torch.distributions.categorical.Categorical(logits=masked_logits)
             token_sample = token_dis.sample()  # [b * n_masked,]
-            current_ind[mask] = token_sample
+            current_ind[mask] = token_sample.cpu()
             token_confidence = torch.gather(token_dis.probs,  # [b * n_masked,]
                                             dim=-1,
                                             index=token_sample.unsqueeze(-1)).squeeze(-1)
@@ -208,7 +208,7 @@ class MaskGITIndex(nn.Module):
             masked_logits = logits.clone()[mask] / temperature[0]  # [b * n_masked, n_tokens]
             token_dis = torch.distributions.categorical.Categorical(logits=masked_logits)
             token_sample = token_dis.sample()  # [b * n_masked,]
-            current_ind[mask] = token_sample
+            current_ind[mask] = token_sample.cpu()
             token_confidence = torch.gather(token_dis.probs,  # [b * n_masked,]
                                             dim=-1,
                                             index=token_sample.unsqueeze(-1)).squeeze(-1)
