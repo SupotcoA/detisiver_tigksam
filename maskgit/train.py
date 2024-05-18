@@ -41,7 +41,7 @@ def train(model: torch.nn.Module,
             model.train()
         if logger.step % train_config['train_steps'] == 0:
             pca_weight(weight=model.maskgit.pos_embed,
-                       latent_size=(32, 32),
+                       latent_size=None,
                        root=train_config['outcome_root'])
             break
 

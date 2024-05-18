@@ -125,7 +125,7 @@ def check_ae(model, x, root):
 
 @torch.no_grad()
 def conditional_generation(model, cls: int, step, root):
-    idx = model.conditional_generation(temperature=(2, 1), n_steps=9, b=9, c=cls)  # [b, n_pos]
+    idx = model.conditional_generation(temperature=(2.5, 1), n_steps=9, b=9, c=cls)  # [b, n_pos]
     imgs = model.decode(idx)
     vis_imgs(imgs, step, cls, root, use_plt=False)
 
@@ -142,7 +142,7 @@ def conditional_generation_gradually(model, cls: int, step, root):
 
 
 @torch.no_grad()
-def pca_weight(weight, latent_size, root):
+def pca_weight(weight, latent_size=None, root=None):
     def f(k):
         if 0 <= k <= 3:  # 0 3
             return k
@@ -152,6 +152,9 @@ def pca_weight(weight, latent_size, root):
             return 3 * k - 10
         else:
             return 0
+    if latent_size is None:
+        latent_size = int(weight.shape[0]**0.5)
+        latent_size = (latent_size, latent_size)
 
     X = weight.detach().cpu().numpy()
     pca = PCA(n_components=24)

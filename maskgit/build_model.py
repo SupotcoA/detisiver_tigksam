@@ -16,7 +16,8 @@ def build_model(maskgit_config,
     else:
         print("running on cpu!")
     optim = torch.optim.Adam(model.maskgit.parameters(),
-                             lr=train_config['base_learning_rate'])
+                             lr=train_config['base_learning_rate'],
+                             betas=(0.9, 0.96))
     if train_config['use_lr_scheduler']:
         lr_scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(optimizer=optim,
                                                                   T_max=train_config['train_steps'],
