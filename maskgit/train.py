@@ -24,21 +24,21 @@ def train(model: torch.nn.Module,
         logger.update(loss.detach().cpu(), log_perplexity.detach().cpu())
         if train_config['use_lr_scheduler']:
             lr_scheduler.step()
-        if logger.step % train_config['eval_every_n_steps']==0:
+        if logger.step % train_config['eval_every_n_steps'] == 0:
             test(model,
                  train_config,
                  test_dataset)
             logger.start_generation()
             model.eval()
             for cls in [0, 1, 2, 3]:
-                conditional_generation(cls=cls, step=logger.step,
+                conditional_generation(model, cls=cls, step=logger.step,
                                        root=train_config['outcome_root'])
-                conditional_generation_gradually(cls=cls, step=logger.step,
+                conditional_generation_gradually(model, cls=cls, step=logger.step,
                                                  root=train_config['outcome_root'])
 
             logger.end_generation()
             model.train()
-        if logger.step % train_config['train_steps']==0:
+        if logger.step % train_config['train_steps'] == 0:
             break
 
 
@@ -55,7 +55,7 @@ def test(model,
         loss, log_perplexity = model.train_step(x0.to(model.device), cls.to(model.device))
         acc_loss += loss.cpu().item()
         acc_log_perplexity += log_perplexity.cpu()
-    perplexity = (torch.exp(acc_log_perplexity) / step).item()
+    perplexity = (torch.exp(acc_log_perplexity / step)).item()
     info = f"Test step\n" \
            + f"loss: {acc_loss / step:.4f}\n" \
            + f"perplexity: {perplexity:.1f}\n"
