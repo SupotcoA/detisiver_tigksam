@@ -1,7 +1,7 @@
 import torch
 from utils import Logger, check_ae, pca_weight,\
     conditional_generation, conditional_generation_gradually
-
+import os
 
 def train(model: torch.nn.Module,
           optim,
@@ -43,6 +43,9 @@ def train(model: torch.nn.Module,
             pca_weight(weight=model.maskgit.pos_embed,
                        latent_size=None,
                        root=train_config['outcome_root'])
+            if train_config['save']:
+                torch.save(model.maskgit.cpu().state_dict(),
+                           os.path.join(train_config['outcome_root'], f"maskgit{logger.step}.pth"))
             break
 
 

@@ -10,6 +10,10 @@ def build_model(maskgit_config,
                     ae_config)
     print_num_params(model.ae, "AE", train_config['log_path'])
     print_num_params(model.maskgit, "MaskGIT", train_config['log_path'])
+    if train_config['pretrained']:
+        model.maskgit.load_state_dict(torch.load(train_config['pretrained'],
+                                                 map_location=torch.device('cpu')),
+                                      strict=True)
     if torch.cuda.is_available():
         model.cuda()
         print("running on cuda")
