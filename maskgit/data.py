@@ -20,7 +20,7 @@ class ImageDataset(Dataset):
             class_dir = os.path.join(self.data_dir, class_name)
             for filename in os.listdir(class_dir):
                 self.image_paths.append(os.path.join(class_dir, filename))
-                self.labels.append(i+base_class_label)
+                self.labels.append(i + base_class_label)
 
     def __len__(self):
         return len(self.image_paths)
@@ -30,8 +30,7 @@ class ImageDataset(Dataset):
         image = np.ascontiguousarray(cv2.imread(image_path)[:, :, ::-1])  # Ensure RGB format
         label = self.labels[idx]
 
-        if self.transform:
-            image = self.transform(image)
+        image = self.transform(image)
 
         return image, label
 
@@ -126,8 +125,12 @@ def build_dataset_img_places(model, data_config):
                              shuffle=False,
                              num_workers=4)
 
+    c = 0
     x, cls = None, None
     for images, labels in data_loader:
+        c += 1
+        if c % 1000 == 0:
+            print(f"encoding {c}th batch.")
         images = images.to(model.device)
         x_ = model.encode(images)
         if x is None:
