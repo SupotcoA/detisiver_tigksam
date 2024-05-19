@@ -103,7 +103,7 @@ def build_dataset_img_places(model, data_config):
     # Define image directory paths
     data_dir = data_config['places_root']  # Replace with the actual path to your AFHQ dataset
     class_names = ['art_studio', 'attic', 'balcony', 'bedroom', 'childs_room',
-                   'closet', 'conference_room', 'corridor dining_room', 'hospital_room',
+                   'closet', 'conference_room', 'corridor', 'dining_room', 'hospital_room',
                    'kitchen', 'laboratory', 'lecture_room', 'library', 'living_room',
                    'music_studio', 'office', 'television_studio', 'yard']
 
