@@ -132,7 +132,7 @@ def check_ae(model, x, root):
 
 @torch.no_grad()
 def conditional_generation(model, cls: int, step, root):
-    idx = model.conditional_generation(temperature=(2.5, 1), n_steps=9, b=9, c=cls)  # [b, n_pos]
+    idx = model.conditional_generation(temperature=(0.7, 1), n_steps=9, b=9, c=cls)  # [b, n_pos]
     imgs = model.decode(idx)
     vis_imgs(imgs, step, cls, root, use_plt=False)
 
