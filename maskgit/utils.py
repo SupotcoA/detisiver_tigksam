@@ -7,6 +7,13 @@ import matplotlib.pyplot as plt
 from sklearn.decomposition import PCA
 
 
+cls2name = ("cat", "dog", "wild", 'art_studio', 'attic', 'balcony',
+            'bedroom', 'childs_room', 'closet', 'conference_room',
+            'corridor', 'dining_room', 'hospital_room', 'kitchen',
+            'laboratory', 'lecture_room', 'library', 'living_room',
+            'music_studio', 'office', 'television_studio', 'yard')
+
+
 @torch.no_grad()
 def print_num_params(model, name, log_path):
     num_params = 0
@@ -46,7 +53,7 @@ def vis_imgs(imgs, step, cls, root, use_plt=False):
     for i in range(3):
         for j in range(3):
             base[i * h:i * h + h, j * w:j * w + w, :] = imgs[i * 3 + j]
-    fp = os.path.join(root, f"cd{step}_{cls}.png")
+    fp = os.path.join(root, f"cd{step}_{cls2name[cls]}.png")
     cv2.imwrite(fp, base)
     if use_plt:
         plt.imshow(base[:, :, ::-1])
@@ -60,7 +67,7 @@ def vis_imgs_gradually(imgs, step, cls, root, use_plt=False):
     for i in range(b):
         for j in range(n_steps):
             base[i * h:i * h + h, j * w:j * w + w, :] = imgs[j, i]
-    fp = os.path.join(root, f"cdp{step}_{cls}.png")
+    fp = os.path.join(root, f"cdp{step}_{cls2name[cls]}.png")
     cv2.imwrite(fp, base)
     if use_plt:
         plt.imshow(base[:, :, ::-1])

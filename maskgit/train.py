@@ -3,6 +3,7 @@ from utils import Logger, check_ae, pca_weight,\
     conditional_generation, conditional_generation_gradually
 import os
 
+
 def train(model: torch.nn.Module,
           optim,
           lr_scheduler,
@@ -31,9 +32,12 @@ def train(model: torch.nn.Module,
                  test_dataset)
             logger.start_generation()
             model.eval()
-            for cls in [0, 1, 2]:
+            for cls in torch.randperm(22)[:3]:
+                cls = cls.item() if not isinstance(cls, int) else cls
                 conditional_generation(model, cls=cls, step=logger.step,
                                        root=train_config['outcome_root'])
+            for cls in torch.randperm(22)[:3]:
+                cls = cls.item() if not isinstance(cls, int) else cls
                 conditional_generation_gradually(model, cls=cls, step=logger.step,
                                                  root=train_config['outcome_root'])
 
