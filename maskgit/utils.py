@@ -127,7 +127,7 @@ def check_ae(model, x, root):
     if x.shape[0] < 9:
         return
     imgs = model.decode(x[:9])
-    vis_imgs(imgs, "ae_check", "ae_check", root, use_plt=True)
+    vis_imgs(imgs, "ae_check", 0, root, use_plt=True)
 
 
 @torch.no_grad()
